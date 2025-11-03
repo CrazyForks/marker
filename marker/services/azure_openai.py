@@ -48,6 +48,7 @@ class AzureOpenAIService(BaseService):
         response_schema: type[BaseModel],
         max_retries: int | None = None,
         timeout: int | None = None,
+        messages: List[PIL.Image.Image | str] | None = None,
     ):
         if max_retries is None:
             max_retries = self.max_retries
@@ -56,17 +57,20 @@ class AzureOpenAIService(BaseService):
             timeout = self.timeout
 
         client = self.get_client()
-        image_data = self.format_image_for_llm(image)
 
-        messages = [
-            {
-                "role": "user",
-                "content": [
-                    *image_data,
-                    {"type": "text", "text": prompt},
-                ],
-            }
-        ]
+        if messages is not None:
+            content = [
+                self.format_image_for_llm(msg)[0]
+                if isinstance(msg, PIL.Image.Image)
+                else msg
+                for msg in messages
+            ]
+            content += [{"type": "text", "text": prompt}]
+        else:
+            image_data = self.format_image_for_llm(image)
+            content = image_data + [{"type": "text", "text": prompt}]
+
+        messages = [{"role": "user", "content": content}]
 
         total_tries = max_retries + 1
         for tries in range(1, total_tries + 1):

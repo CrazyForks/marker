@@ -32,7 +32,10 @@ class OllamaService(BaseService):
         response_schema: type[BaseModel],
         max_retries: int | None = None,
         timeout: int | None = None,
+        messages: List[PIL.Image.Image | str] | None = None,
     ):
+        if messages is not None:
+            raise NotImplementedError("OllamaService does not support arbitrary list of messages. Specify `prompt` and `image` instead.")
         url = f"{self.ollama_base_url}/api/generate"
         headers = {"Content-Type": "application/json"}
 

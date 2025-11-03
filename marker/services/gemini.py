@@ -57,10 +57,9 @@ class BaseGeminiService(BaseService):
             timeout = self.timeout
 
         client = self.get_google_client(timeout=timeout)
-        image_parts = self.format_image_for_llm(image)
 
         if messages is not None:
-            gemini_messages = [self.process_images([msg])[0] if isinstance(msg, PIL.Image.Image) else msg for msg in messages]
+            gemini_messages = [self.format_image_for_llm(msg)[0] if isinstance(msg, PIL.Image.Image) else msg for msg in messages]
         else:
             image_parts = self.format_image_for_llm(image)
             # According to gemini docs, it performs better if the image is the first element

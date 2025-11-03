@@ -51,5 +51,6 @@ class BaseService:
         response_schema: type[BaseModel],
         max_retries: int | None = None,
         timeout: int | None = None,
+        messages: List[PIL.Image.Image | str] | None = None,
     ):
         raise NotImplementedError
